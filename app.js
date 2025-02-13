@@ -4,7 +4,15 @@ const app=express();
 const passport = require("passport");
 const jwtPassport = require("./config/passport_jwt_strategy");
 const session = require("express-session");
-const db=require('./config/db');
+// const db=require('./config/db');
+const mongoose=require('mongoose');
+mongoose.connect(
+      "mongodb+srv://kukadiyanensi838:HSDmIm2lmEgtkfVa@cluster0.j60zp.mongodb.net/API").then((res) => {
+          console.log("Database is Online Connected");
+      })
+      .catch((err) => {
+          console.log("Database is not Connected",err);
+      });
 
 app.use(express.urlencoded());
 app.use(session({

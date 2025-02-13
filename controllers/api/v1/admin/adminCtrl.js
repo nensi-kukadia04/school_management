@@ -1,6 +1,8 @@
 const Admin=require('../../../../models/admin/adminModel');
+const Faculty=require('../../../../models/faculty/FacultyModel');
 const bcrypt=require('bcrypt');
 const jwt=require('jsonwebtoken');
+const nodemailer=require('nodemailer');
 
 //Admin Register
 module.exports.adminRegister=async(req,res)=>{
@@ -67,8 +69,6 @@ module.exports.adminProfile=async(req,res)=>{
 //edit profile
 module.exports.editAdminProfile=async(req,res)=>{
     try{
-        console.log("params id",req.params.id);
-        console.log("req body",req.body);
         let checkAdminId=await Admin.findById(req.params.id);
         if(checkAdminId){
             let updateAdminProfile=await Admin.findByIdAndUpdate(req.params.id,req.body);
@@ -138,4 +138,136 @@ module.exports.changeAdminPassword=async(req,res)=>{
         
         res.status(400).json({msg:"something is wrong..",error:err});
     }
+}
+
+//forget password
+module.exports.sendEmail=async(req,res)=>{
+    try{
+        let checkEmail=await Admin.findOne({email:req.body.email});
+        if(checkEmail){
+            const transporter = nodemailer.createTransport({
+                host: "smtp.gmail.com",
+                port: 587,
+                secure: false, // true for port 465, false for other ports
+                auth: {
+                  user: "kukadiyanensi41@gmail.com",
+                  pass: "pvrsvtypfeurzwwj",
+                },
+                tls:{
+                    rejectUnauthorized:false
+                }
+            });
+
+            let otp=Math.round(Math.random()*1000000);
+
+            const info = await transporter.sendMail({
+                from: 'kukadiyanensi41@gmail.com', // sender address
+                to: req.body.email, // list of receivers
+                subject: "OTP Verification", // Subject line
+                text: "forget password", // plain text body
+                html: `<b>Otp:${otp}</b>`, // html body
+            });
+
+            let data={
+                email:req.body.email,otp
+            }
+            if(info){
+                res.status(200).json({msg:"send Mail..please check your mail",data:data});
+            }else{
+                res.status(200).json({msg:"mail not sent",data:info});
+            }
+        }
+        else{
+            res.status(200).json({msg:"Invalid Email"});
+        }
+    }
+    catch(err){
+        res.status(400).json({msg:"something is wrong..",error:err});
+    }
+}
+
+module.exports.forgetPassword=async(req,res)=>{
+    try{
+        let checkEmail=await Admin.findOne({email:req.query.email});
+        if(checkEmail){
+            if(req.body.newPass==req.body.confirmPass){
+                req.body.password=await bcrypt.hash(req.body.newPass,10);
+                let updatePassword=await Admin.findByIdAndUpdate(checkEmail._id,req.body);
+                if(updatePassword){
+                    res.status(200).json({msg:"password updated successfully",data:updatePassword});
+                }
+                else{
+                    res.status(200).json({msg:"Password not updated"});
+                }
+            }
+            else{
+                res.status(200).json({msg:"new Password and confirm password not matched"});
+            }
+        }else{
+            res.status(200).json({msg:"Invalid Email"});
+        }
+    }
+    catch(err){
+        res.status(400).json({msg:"something is wrong..",error:err});
+    }
+}
+
+//faculty Registration
+module.exports.facultyRegister=async(req,res)=>{
+    try{
+        let existEmail=await Faculty.findOne({email:req.body.email});
+        if(!existEmail){
+            var gPass=generatePassword();
+            var link="http://localhost:9000/api";
+            let transporter = nodemailer.createTransport({
+                host: "smtp.gmail.com",
+                port: 587,
+                secure: false, // true for port 465, false for other ports
+                auth: {
+                  user: "kukadiyanensi41@gmail.com",
+                  pass: "pvrsvtypfeurzwwj",
+                },
+                tls:{
+                    rejectUnauthorized:false
+                }
+            });
+
+            const info = await transporter.sendMail({
+                from: 'kukadiyanensi41@gmail.com', // sender address
+                to: req.body.email, // list of receivers
+                subject: "Faculty Verification", // Subject line
+                text: "Faculty Login", // plain text body
+                html: `<h1>Faculty Verification</h1><p>email:${req.body.email}</p><p>password:${gPass}</p><p>To Get Login Click here:${link}</p>`, // html body
+            });
+            
+            if(info){
+                let addFaculty=await Faculty.create({email:req.body.email,password:gPass,userName:req.body.userName});
+                if(addFaculty){
+                    res.status(200).json({msg:"Faculty add successfully",data:addFaculty});
+                }else{
+                    res.status(200).json({msg:"Faculty not add"});
+                }
+            }else{
+                res.status(200).json({msg:"Mail not Sent"});
+            }
+        }
+        else{
+            res.status(200).json({msg:"Invalid Email"});
+        }
+    }
+    catch(err){
+        console.log(err);
+        
+        res.status(400).json({msg:"something is wrong..",error:err});
+    }
+}
+//password generator
+function generatePassword() {
+    var length = 8,
+        charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
+        retVal = "";
+    for (var i = 0, n = charset.length; i < length; ++i) {
+        retVal += charset.charAt(Math.floor(Math.random() * n));
+    }
+    return retVal;
 }

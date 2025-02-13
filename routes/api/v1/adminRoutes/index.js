@@ -22,6 +22,13 @@ routes.get('/adminLogout',passport.authenticate('jwt',{failureRedirect:'/api/adm
 //change admin Password
 routes.post('/changeAdminPassword',passport.authenticate('jwt',{failureRedirect:'/api/adminFailLogin'}),adminCtrl.changeAdminPassword);
 
+//forget password
+routes.post('/sendEmail',adminCtrl.sendEmail);
+routes.post('/forgetPassword',adminCtrl.forgetPassword);
+
+//faculty registration
+routes.post("/facultyRegister",passport.authenticate('jwt',{failureRedirect:'/api/adminFailLogin'}),adminCtrl.facultyRegister);
+
 //fail Login 
 routes.get('/adminFailLogin',async(req,res)=>{
     try{

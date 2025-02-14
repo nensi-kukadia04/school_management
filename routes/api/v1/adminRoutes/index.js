@@ -39,5 +39,4 @@ routes.get('/adminFailLogin',async(req,res)=>{
     }
 })
 
-
 module.exports=routes;

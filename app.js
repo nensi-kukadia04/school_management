@@ -30,6 +30,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use('/api',require('./routes/api/v1/adminRoutes'));
+app.use('/api/faculty',require('./routes/api/v1/FacultyRoutes/facultyRoute'));
 
 app.listen(port,(err)=>{
     err?console.log("Error is",err):console.log("Server is running on port http://localhost:"+port);

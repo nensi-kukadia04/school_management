@@ -241,7 +241,8 @@ module.exports.facultyRegister=async(req,res)=>{
             });
             
             if(info){
-                let addFaculty=await Faculty.create({email:req.body.email,password:gPass,userName:req.body.userName});
+                let bcryptGPass=await bcrypt.hash(gPass,10);
+                let addFaculty=await Faculty.create({email:req.body.email,password:bcryptGPass,userName:req.body.userName});
                 if(addFaculty){
                     res.status(200).json({msg:"Faculty add successfully",data:addFaculty});
                 }else{
@@ -256,8 +257,6 @@ module.exports.facultyRegister=async(req,res)=>{
         }
     }
     catch(err){
-        console.log(err);
-        
         res.status(400).json({msg:"something is wrong..",error:err});
     }
 }

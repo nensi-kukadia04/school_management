@@ -4,15 +4,15 @@ const app=express();
 const passport = require("passport");
 const jwtPassport = require("./config/passport_jwt_strategy");
 const session = require("express-session");
-// const db=require('./config/db');
+const db=require('./config/db');
 const mongoose=require('mongoose');
-mongoose.connect(
-      "mongodb+srv://kukadiyanensi838:HSDmIm2lmEgtkfVa@cluster0.j60zp.mongodb.net/API").then((res) => {
-          console.log("Database is Online Connected");
-      })
-      .catch((err) => {
-          console.log("Database is not Connected",err);
-      });
+// mongoose.connect(
+//       "mongodb+srv://kukadiyanensi838:HSDmIm2lmEgtkfVa@cluster0.j60zp.mongodb.net/API").then((res) => {
+//           console.log("Database is Online Connected");
+//       })
+//       .catch((err) => {
+//           console.log("Database is not Connected",err);
+//       });
 
 app.use(express.urlencoded());
 app.use(session({
@@ -31,6 +31,7 @@ app.use(passport.session());
 
 app.use('/api',require('./routes/api/v1/adminRoutes'));
 app.use('/api/faculty',require('./routes/api/v1/FacultyRoutes/facultyRoute'));
+app.use('/api/student',require('./routes/api/v1/StudentRoutes'));
 
 app.listen(port,(err)=>{
     err?console.log("Error is",err):console.log("Server is running on port http://localhost:"+port);

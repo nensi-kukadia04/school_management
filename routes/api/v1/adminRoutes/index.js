@@ -29,6 +29,9 @@ routes.post('/forgetPassword',adminCtrl.forgetPassword);
 //faculty registration
 routes.post("/facultyRegister",passport.authenticate('jwt',{failureRedirect:'/api/adminFailLogin'}),adminCtrl.facultyRegister);
 
+//see all faculty
+routes.get('/seeAllFaculty',passport.authenticate('jwt',{failureRedirect:'/api/adminFailLogin'}),adminCtrl.seeAllFaculty);
+
 //fail Login 
 routes.get('/adminFailLogin',async(req,res)=>{
     try{

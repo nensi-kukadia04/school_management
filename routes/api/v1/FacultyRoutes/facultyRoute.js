@@ -16,6 +16,16 @@ routes.post('/editFacultyProfile/:id',passport.authenticate('faculty',{failureRe
 //faculty logout
 routes.get('/facultyLogout',passport.authenticate('faculty',{failureRedirect:'/api/faculty/failFacultyAuth'}),facultyCtrl.facultyLogout);
 
+//change password
+routes.post('/changeFacultyPassword',passport.authenticate('faculty',{failureRedirect:'/api/faculty/failFacultyAuth'}),facultyCtrl.changeFacultyPassword);
+
+//forgetPassword
+routes.post('/sendFacultyEmail',facultyCtrl.sendFacultyEmail);
+routes.post('/forgetFacultyPassword',facultyCtrl.forgetFacultyPassword);
+
+//student Registeration
+routes.post('/studentRegister',passport.authenticate('faculty',{failureRedirect:'/api/faculty/failFacultyAuth'}),facultyCtrl.studentRegister);
+
 //Unauthorized
 routes.get('/failFacultyAuth',async(req,res)=>{
     try{

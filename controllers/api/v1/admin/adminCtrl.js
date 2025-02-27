@@ -260,6 +260,19 @@ module.exports.facultyRegister=async(req,res)=>{
         res.status(400).json({msg:"something is wrong..",error:err});
     }
 }
+
+//see all Faculty
+module.exports.seeAllFaculty=async(req,res)=>{
+    try{
+        let seeFaculty=await Faculty.find();
+        res.status(200).json({msg:"All Faculty Data",allFaculty:seeFaculty});
+    }
+    catch(err){
+        res.status(400).json({msg:"something is wrong..",error:err});
+    }
+}
+
+
 //password generator
 function generatePassword() {
     var length = 8,
